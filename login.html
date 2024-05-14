@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="login.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container-esquerda">
+        <div id = "titulo-cadastro">
+            <h1><strong>Bem Vindos ao Vet-Tech</strong></h1>
+        </div>
+        <div id="subtitulo">
+            <p>Melhorando a forma de lidar com a vida animal, com a tecnologia</p>
+        </div>
+        <button type="button" id="seCadastrar" onclick="seCadastrar()">CADASTRE-SE</button>
+    </div>
+
+    <div class="container-direita">
+        <div id = "titulo-login">
+            <h2><strong>ACESSE SUA CONTA</strong></h2>
+        </div>
+        <form method="get">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" required>
+        
+            <label for="password">Senha</label>
+            <input type="password" id="password" required>
+            <p><a href="./recsenha.html">Esqueci minha senha</a></p>
+            <button type="button" id="entrar" onclick="login()">ENTRAR</button>
+        </form>
+        
+    </div>
+
+    <form id="register-form">
+       
+     </form>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+
+
+
+
+</html>
