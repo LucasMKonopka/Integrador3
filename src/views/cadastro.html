@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="../public/css/reset.css">
+    <link rel="stylesheet" href="../public/css/login.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container-esquerda">
+        <div id="titulo-cadastro">
+            <h1><strong>CADASTRE-SE</strong></h1>
+        </div>
+        <div id="img-logo">
+            <img src="../imagem/image 13.png" alt="">
+        </div>
+        
+    </div>
+
+    <div class="container-direita">
+        <div id="titulo-login">
+            <h2><strong>ACESSE SUA CONTA</strong></h2>
+        </div>
+        <form id="register-form" action="./login.html" method="get">
+            <label for="nome">Nome</label>
+            <input type="nome" id="nome" required>
+
+            <label for="CPF/CNPJ">CPF/CNPJ</label>
+            <input type="CPF/CNPJ" id="CPF/CNPJ" required>
+
+            <label for="Email">Email</label>
+            <input type="Email" id="email" required>
+
+            <label for="password">Senha</label>
+            <input type="password" id="password" required>
+            <span id="password-length-message" style="color: red;"></span>
+
+            <label for="ConfirmarPassword">Confirmar Senha</label>
+            <input type="password" id="ConfirmarPassword" required>
+            <span id="password-message" style="color: red;"></span>
+
+            <button type="submit" id="cadastre-se">CADASTRAR-SE</button>
+        </form>
+        <div>  
+            <button type="button" id="voltarLogin" onclick="voltarLogin()">VOLTAR AO LOGIN</button>
+        </div>
+    </div>
+
+    <form id="register-form">
+        
+     </form>
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="script.js"></script>
+    
+</body>
+
+
+
+
+</html>
