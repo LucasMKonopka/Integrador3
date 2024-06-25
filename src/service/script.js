@@ -1,88 +1,4 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyBPlhIlvJV45Q0MYEPeD39w7Yfumor2aas",
-    authDomain: "integrador-34f24.firebaseapp.com",
-    projectId: "integrador-34f24",
-    storageBucket: "integrador-34f24.appspot.com",
-    messagingSenderId: "172090242497",
-    appId: "1:172090242497:web:f8a358455abec8f2c36b40"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-
-firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(() => {
-        
-        console.log("Autenticação persistente ativada.");
-    })
-    .catch((error) => {
-        console.error("Erro ao configurar a persistência de autenticação:", error);
-    });
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    
-    firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-            console.log("Usuário já autenticado:", user);
-           
-            if(window.location.href.includes('login.html')){
-                window.location.href = "./inicial.html";
-            }
-        } else {
-            console.log("Usuário não autenticado.");
-        }
-    });
-});
-
-
-function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    firebase.auth().signInWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-            console.log("Usuário autenticado com sucesso:", userCredential.user);
-            window.location.href = "./inicial.html"; 
-        })
-        .catch((error) => {
-            if (error.code === 'auth/invalid-login-credentials') {
-                alert("Credenciais de login inválidas. Por favor, verifique seu e-mail e senha.");
-            } else {
-                alert("Ocorreu um erro ao fazer login. Por favor, tente novamente mais tarde.");
-            }
-        });
-}
-
-
-
-
-
-
-
-function Sair() {
-    
-    firebase.auth().signOut()
-        .then(() => {
-            console.log("Usuário deslogado com sucesso.");
-            localStorage.removeItem('user'); 
-            window.location.href = "login.html"; 
-        })
-        .catch((error) => {
-            console.error('Erro ao fazer logout:', error);
-        });
-}
-
-
-
-
-
-const db = firebase.firestore();
-
-
 const formCadastroAnimal = document.getElementById('formCadastroAnimal');
-
-
 
 
 function salvarAnimal() {
@@ -250,52 +166,10 @@ function carregarAnimais() {
 
 
 
-function salvarFicha() {
-    const animalId = document.getElementById('animal').value;
-    const nomeVeterinario = document.getElementById('nomeveterinario').value;
-    const dataAtendimento = document.getElementById('dataAtendimento').value;
-    const procedimento = document.getElementById('atendimento').value;
 
-    
-    if (!animalId || !nomeVeterinario || !dataAtendimento || !procedimento) {
-        alert("Por favor, preencha todos os campos.");
-        return;
-    }
-
-    const fichaAtendimentoData = {
-        userId: firebase.auth().currentUser.uid,
-        animalId: animalId,
-        nomeVeterinario: nomeVeterinario,
-        dataAtendimento: dataAtendimento,
-        procedimento: procedimento
-    };
-
-    
-    db.collection('fichas').add(fichaAtendimentoData)
-        .then(function(docRef) {
-            console.log("Ficha de atendimento cadastrada com ID: ", docRef.id);
-            
-            document.getElementById('formNovaFicha').reset();
-            
-            var mensagemFicha = document.getElementById('mensagemFicha');
-            if (mensagemFicha) {
-                mensagemFicha.textContent = "Ficha de atendimento cadastrada com sucesso!";
-            }
-            
-            setTimeout(() => {
-                window.location.href = "inicial.html";
-            }, 1000);
-        })
-}
   
 
-function cancelarFicha() {
-    var confirmacao = confirm("Tem certeza que deseja cancelar a criação da nova ficha? Ao excluir a ficha, todas as pendências relacionadas a ela serão excluídas e não será possível desfazer o processo.");
 
-    if (confirmacao) {
-        window.location.href = "inicial.html";
-    } 
-}
 function buscarficha(){
     window.location.href = "buscarficha.html";
 }
@@ -305,89 +179,11 @@ function buscarficha(){
 function seCadastrar(){
     window.location.href = "cadastro.html";
 }
-
+/////////////////////////////////////////////
 function VoltarLogin(){
     window.location.href = "Login.html";
 }
-function voltarLogin(){
-    window.location.href = "Login.html";
-}
-
-
-
-function RedefinirSenha(){
-    const email = document.getElementById('email').value;
-
-    firebase.auth().sendPasswordResetEmail(email)
-        .then(() => {
-            alert('E-mail enviado com sucesso para redefinição de senha.');
-            window.location.href = "Login.html";
-        })
-        .catch((error) => {
-            if (error.code === 'auth/user-not-found') {
-                alert('Não existe uma conta associada a este e-mail. Por favor, verifique o e-mail fornecido.');
-            } else {
-                alert('Ocorreu um erro ao enviar o e-mail de redefinição de senha. Por favor, tente novamente mais tarde.');
-            }
-        });
-}
-
-
-
-var registerForm = document.getElementById('register-form');
-if (registerForm) {
-    registerForm.addEventListener('submit', function(event) {
-        event.preventDefault(); 
-        
-        
-        validateForm();
-    });
-} else {
-    console.error("Elemento 'register-form' não encontrado.");
-}
-
-function validateForm() {
-    var password = document.getElementById("password").value;
-    var confirmPassword = document.getElementById("ConfirmarPassword").value;
-    var passwordLengthMessage = document.getElementById("password-length-message");
-    var passwordMessage = document.getElementById("password-message");
-
-    if (password.length < 6) {
-        passwordLengthMessage.textContent = "A senha deve ter pelo menos 6 caracteres.";
-        return;
-    } else {
-        passwordLengthMessage.textContent = "";
-    }
-
-    if (password !== confirmPassword) {
-        passwordMessage.textContent = "As senhas não coincidem.";
-        return; 
-    } else {
-        passwordMessage.textContent = "";
-    }
-    register();
-}
-
-
-function register() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    firebase.auth().createUserWithEmailAndPassword(
-        email, password
-    ).then(() => {
-        window.location.href = "login.html"; 
-    }).catch(error => {
-        alert(getErrorMessage(error));
-    })
-}
-
-function getErrorMessage(error) {
-    if (error.code == "auth/email-already-in-use") {
-        return "Email já está em uso";
-    }
-    return error.message;
-}
-
+///////////////////////////////////////////////
 
 
 
