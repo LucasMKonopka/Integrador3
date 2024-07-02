@@ -150,55 +150,6 @@ function cancelarFicha() {
     } 
 }
 
-
-function salvarAnimal() {
-    
-    const nome = formCadastroAnimal.nome.value.trim();
-    const datanasc = formCadastroAnimal.datanasc.value.trim();
-    const especie = formCadastroAnimal.especie.value.trim();
-    const idade = formCadastroAnimal.idade.value.trim();
-    const sexo = formCadastroAnimal.sexo.value.trim();
-    const raca = formCadastroAnimal.raça.value.trim();
-    const porte = formCadastroAnimal.porte.value.trim();
-    const observacoes = formCadastroAnimal.observacoes.value.trim();
-  
-    
-    if (!nome || !datanasc || !especie || !idade || !sexo || !raca || !porte || !observacoes) {
-      alert("Por favor, preencha todos os campos.");
-      return;
-    }
-  
-    
-    const animalData = {
-      nome: nome,
-      datanasc: datanasc,
-      especie: especie,
-      idade: idade,
-      sexo: sexo,
-      raca: raca,
-      porte: porte,
-      observacoes: observacoes,
-      userId: firebase.auth().currentUser.uid 
-    };
-  
-    db.collection('animais').add(animalData)
-      .then(function(docRef) {
-        console.log("Animal cadastrado com ID: ", docRef.id);
-        
-        formCadastroAnimal.reset();
-       
-        document.getElementById('mensagemCadastro').textContent = "Animal cadastrado com sucesso!";
-        
-        setTimeout(() => {
-          window.location.href = "inicial.html";
-        }, 1000); 
-      })
-      .catch(function(error) {
-        console.error("Erro ao cadastrar animal: ", error);
-        
-        document.getElementById('mensagemCadastro').textContent = "Erro ao cadastrar animal. Por favor, tente novamente.";
-      });
-  }
   
   function cancelarCadastro() {
     var confirmacao = confirm("Tem certeza que deseja cancelar o cadastro? Ao cancelar esse cadastro, todas as pendências relacionadas a ela serão excluídas e não será possível desfazer o processo.");
@@ -229,19 +180,32 @@ function apagarAnimal() {
     }
 
     if (confirm("Tem certeza de que deseja excluir este animal?")) {
-        
-        db.collection('animais').doc(animalId).delete()
+
+        db.collection('fichas').where('animalId', '==', animalId).get()
+            .then(querySnapshot => {
+
+                const batch = db.batch();
+
+                querySnapshot.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+
+                batch.delete(db.collection('animais').doc(animalId));
+
+                return batch.commit();
+            })
             .then(() => {
-                alert("Animal excluído com sucesso.");
-                
-                carregarAnimaisSelecionar();
+                alert("Animal e fichas relacionadas excluídos com sucesso.");
+                window.location.href = 'inicial.html';
+
             })
             .catch(error => {
-                console.error("Erro ao excluir animal:", error);
-                alert("Erro ao excluir o animal. Por favor, tente novamente mais tarde.");
+                console.error("Erro ao excluir animal e fichas relacionadas:", error);
+                alert("Erro ao excluir o animal e suas fichas. Por favor, tente novamente mais tarde.");
             });
+    } else {
+        limparCampos(); 
     }
-    limparCampos();
 }
 
 
@@ -255,7 +219,6 @@ function salvarEdicao() {
     }
 
     const novoNome = document.getElementById('novoNome').value;
-
     const datanasc = document.getElementById('datanasc').value;
     const especie = document.getElementById('especie').value;
     const idade = document.getElementById('idade').value;
@@ -488,54 +451,50 @@ function carregarAnimaisBuscar() {
         });
 }
 
-function buscarFichasDoAnimal() {
-    
+async function buscarFichasDoAnimal() {
     const animalId = document.getElementById('selectAnimalBuscar').value;
 
-    
     if (!animalId) {
         console.error("Nenhum animal selecionado.");
         return;
     }
 
-    
-    const fichasDeAtendimentoList = document.getElementById('fichasDeAtendimento');
-    
-    
+    const fichasDeAtendimentoList = document.getElementById('fichasDeAtendimento').getElementsByTagName('tbody')[0];
     fichasDeAtendimentoList.innerHTML = "";
 
-    
-    db.collection('fichas').where('animalId', '==', animalId).get()
-        .then(querySnapshot => {
-            if (querySnapshot.empty) {
-                
-                const noFichasMessage = document.createElement('tr');
-                const noFichasDataCell = document.createElement('td');
-                noFichasDataCell.colSpan = 4; 
-                noFichasDataCell.textContent = "Nenhuma ficha de atendimento encontrada para este animal.";
-                noFichasMessage.appendChild(noFichasDataCell);
-                fichasDeAtendimentoList.appendChild(noFichasMessage);
-            } else {
-                
-                querySnapshot.forEach(async doc => {
-                    const ficha = doc.data();
-                    
-                    const nomeAnimal = await obterNomeAnimal(ficha.animalId);
-                    const newRow = document.createElement('tr');
-                    newRow.innerHTML = `
-                        <td>${ficha.dataAtendimento}</td>
-                        <td>${nomeAnimal}</td>
-                        <td>${ficha.nomeVeterinario}</td>
-                        <td>${ficha.procedimento}</td>
-                    `;
-                    fichasDeAtendimentoList.appendChild(newRow);
-                });
+    try {
+        const querySnapshot = await db.collection('fichas').where('animalId', '==', animalId).get();
+        if (querySnapshot.empty) {
+            const noFichasMessage = document.createElement('tr');
+            const noFichasDataCell = document.createElement('td');
+            noFichasDataCell.colSpan = 5; 
+            noFichasDataCell.textContent = "Nenhuma ficha de atendimento encontrada para este animal.";
+            noFichasMessage.appendChild(noFichasDataCell);
+            fichasDeAtendimentoList.appendChild(noFichasMessage);
+        } else {
+            for (const doc of querySnapshot.docs) {
+                const ficha = doc.data();
+                const nomeAnimal = await obterNomeAnimal(ficha.animalId);
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${ficha.dataAtendimento}</td>
+                    <td>${nomeAnimal}</td>
+                    <td>${ficha.nomeVeterinario}</td>
+                    <td>${ficha.procedimento}</td>
+                    <td><button onclick="editarFicha('${doc.id}')">Editar</button></td>
+                `;
+                fichasDeAtendimentoList.appendChild(newRow);
             }
-        })
-        .catch(error => {
-            console.error("Erro ao buscar fichas de atendimento:", error);
-        });
+        }
+    } catch (error) {
+        console.error("Erro ao buscar fichas de atendimento:", error);
+    }
 }
+
+function editarFicha(id) {
+    window.location.href = `editarficha.html?id=${id}`;
+}
+
 
 
 async function obterNomeAnimal(animalId) {
@@ -670,33 +629,7 @@ function cancelarEdicao() {
 }
 
 
-function apagarAnimal() {
-    const selectAnimal = document.getElementById('nomeSelecionar');
-    const animalId = selectAnimal.value;
-
-    if (!animalId) {
-        alert("Por favor, selecione um animal para excluir.");
-        return;
-    }
-
-    if (confirm("Tem certeza de que deseja excluir este animal?")) {
-        
-        db.collection('animais').doc(animalId).delete()
-            .then(() => {
-                alert("Animal excluído com sucesso.");
-                
-                carregarAnimaisSelecionar();
-            })
-            .catch(error => {
-                console.error("Erro ao excluir animal:", error);
-                alert("Erro ao excluir o animal. Por favor, tente novamente mais tarde.");
-            });
-    }
-    limparCampos();
-}
-
-
-function salvarEdicao() {
+function salvarEdicaoFicha() {
     const selectAnimal = document.getElementById('nomeSelecionar');
     const animalId = selectAnimal.value;
 
@@ -748,4 +681,56 @@ function limparCampos() {
     document.getElementById('raca').value = '';
     document.getElementById('porte').value = '';
     document.getElementById('observacoes').value = '';
+}
+
+
+
+const params = new URLSearchParams(window.location.search);
+const fichaId = params.get('id');
+
+async function buscarFicha(id) {
+    const doc = await db.collection('fichas').doc(id).get();
+    return doc.data();
+}
+
+async function preencherFormulario(id) {
+    const ficha = await buscarFicha(id);
+    document.getElementById('dataAtendimento').value = ficha.dataAtendimento;
+    document.getElementById('nomeVeterinario').value = ficha.nomeVeterinario;
+    document.getElementById('procedimento').value = ficha.procedimento;
+}
+
+preencherFormulario(fichaId);
+
+async function salvarEdicaoFicha() {
+    const dataAtendimento = document.getElementById('dataAtendimento').value;
+    const nomeVeterinario = document.getElementById('nomeVeterinario').value;
+    const procedimento = document.getElementById('procedimento').value;
+
+    try {
+        await db.collection('fichas').doc(fichaId).update({
+        dataAtendimento: dataAtendimento,
+        nomeVeterinario: nomeVeterinario,
+        procedimento: procedimento
+        });
+        alert("Ficha atualizada com sucesso!");
+            window.location.href = "buscarficha.html";
+    } catch (error) {
+        console.error("Erro ao atualizar ficha:", error);
+        alert("Erro ao atualizar ficha. Tente novamente.");
+    }
+}
+
+async function apagarFicha() {
+    const confirmacao = confirm("Tem certeza que deseja excluir esta ficha?");
+    if (confirmacao) {
+        try {
+            await db.collection('fichas').doc(fichaId).delete();
+            alert("Ficha excluída com sucesso!");
+            window.location.href = "buscarficha.html";
+        } catch (error) {
+            console.error("Erro ao excluir ficha:", error);
+            alert("Erro ao excluir ficha. Tente novamente.");
+        }
+    }
 }

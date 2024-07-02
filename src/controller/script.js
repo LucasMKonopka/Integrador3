@@ -22,5 +22,8 @@ function VoltarLogin(){
 function editaranimal(){
     window.location.href = "editarAnimal.html";
 }
+function User(){
+    window.location.href = "editarUsuario.html";
+}
 
 

@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar Ficha</title>
+    <title>Editar Ficha de Atendimento</title>
     <link rel="stylesheet" href="/public/css/reset.css">
     <link rel="stylesheet" href="/public/css/style.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300&display=swap" rel="stylesheet">
@@ -16,6 +17,7 @@
             <div id="img-logo">
                 <img src="/public/imagem/Logo.png" alt="">
             </div>
+
             <div id="titulo-cabecario">
                 <h1><strong>Vet-tech</strong></h1>
             </div>
@@ -23,34 +25,26 @@
     </header>
     <main>
         <div id="container-principal">
-            <div id="buscarficha">
-                <h2><strong>Buscar Ficha</strong></h2>
+            <div id="CadastrodeAnimais">
+                <h2><strong>Editar Ficha de Atendimento</strong></h2>
             </div>
-            <form id="formBuscarFicha">
-                <div id="buscar-ficha">
-                    <select id="selectAnimalBuscar">
-                        <!-- Opções de animais serão carregadas aqui -->
-                    </select>
-                    <button type="button" id="btnBuscarFichas" onclick="buscarFichasDoAnimal()">Buscar Fichas</button>
+            <form id="formEditarFicha">
+                <label for="dataAtendimento">Data:</label>
+                <input type="date" id="dataAtendimento" name="dataAtendimento" required>
+
+                <label for="nomeVeterinario">Veterinário:</label>
+                <input type="text" id="nomeVeterinario" name="nomeVeterinario" required>
+
+                <label for="procedimento">Procedimento:</label>
+                <input type="text" id="procedimento" name="procedimento" required>
+
+                <div>
+                    <button type="button" id="cancelarAlteracoes" onclick="cancelarEdicao()">Cancelar</button>
+                    <button type="button" id="excluirFicha" onclick="apagarFicha()">Excluir</button>
+                    <button type="button" id="salvarAlteracoes" onclick="salvarEdicaoFicha()">Salvar</button>
                 </div>
             </form>
-            <div id="tabela-fichas">
-                <table id="fichasDeAtendimento">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Animal</th>
-                            <th>Veterinário</th>
-                            <th>Procedimento</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Fichas serão carregadas aqui -->
-                    </tbody>
-                </table>
-            </div>
-            <div id="mensagemBuscarFichas"></div>
+            <div id="mensagemCadastro"></div>
         </div>
     </main>
     <footer>
@@ -79,10 +73,10 @@
             </div>
         </div>
     </footer>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/2.25.0/index.min.js"></script>
     <script src="../model/firestore.js"></script>
     <script src="../controller/script.js"></script>
 </body>

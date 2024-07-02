@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar Ficha</title>
+    <title>Edite o Usuário</title>
     <link rel="stylesheet" href="/public/css/reset.css">
     <link rel="stylesheet" href="/public/css/style.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300&display=swap" rel="stylesheet">
+
 </head>
 <body>
     <header>
@@ -16,6 +18,7 @@
             <div id="img-logo">
                 <img src="/public/imagem/Logo.png" alt="">
             </div>
+
             <div id="titulo-cabecario">
                 <h1><strong>Vet-tech</strong></h1>
             </div>
@@ -23,41 +26,55 @@
     </header>
     <main>
         <div id="container-principal">
-            <div id="buscarficha">
-                <h2><strong>Buscar Ficha</strong></h2>
-            </div>
-            <form id="formBuscarFicha">
-                <div id="buscar-ficha">
-                    <select id="selectAnimalBuscar">
-                        <!-- Opções de animais serão carregadas aqui -->
-                    </select>
-                    <button type="button" id="btnBuscarFichas" onclick="buscarFichasDoAnimal()">Buscar Fichas</button>
+                <div id = "CadastrodeAnimais">
+                    <h2><strong>Edite o Usuário</strong></h2>
                 </div>
+            
+
+            
+            <form id="formEditarUsuario">
+                
+                <label for="nome">Nome:</label>
+                <input type="text" id="novoNome" name="novoNome" required>
+
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" name="cpf" required>
+
+                <label for="email">Email:</label>
+                <input type="text" id="email" name="email" required>
+
+                <label for="novaSenha">Nova Senha</label>
+                <input type="password" id="novaSenha" name="novaSenha">
+
+                <label for="confirmarNovaSenha">Confirmar Nova Senha</label>
+                <input type="password" id="confirmarNovaSenha" name="confirmarNovaSenha">
+
+
+                <div>
+                    <button type="button" id="cancelarAlteracoes" onclick="cancelarEdicaoUser()">Cancelar</button>
+                    <button type="button" id="excluirAnimal" onclick="apagarUser()">Excluir</button>
+                    <button type="button" id="salvarAlteracoes" onclick="salvarEdicaoUser()">Salvar</button>
+                    
+                    
+                </div>
+                <br><br>
             </form>
-            <div id="tabela-fichas">
-                <table id="fichasDeAtendimento">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Animal</th>
-                            <th>Veterinário</th>
-                            <th>Procedimento</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Fichas serão carregadas aqui -->
-                    </tbody>
-                </table>
-            </div>
-            <div id="mensagemBuscarFichas"></div>
+
+            
+            <div id="mensagemCadastro"></div>
+
+
         </div>
     </main>
+
+
     <footer>
         <div id="container-rodape">
             <div id="img-logo-rodape">
                 <img src="/public/imagem/Logo.png" alt="">
             </div>
+
+            
             <div id="conteudo-rodape">
                 <div id="links-rodape">
                     <ul id="lista-rodape">
@@ -66,7 +83,7 @@
                         <li><strong>SUPORTE</strong></li>
                     </ul>
                 </div>
-                <button id="botao-home" onclick="irParaHome()">Home</button>
+                <button id="botao-home" onclick="botaoHome()">Home</button>
                 <button id="informacoes" onclick="informacoes()">Informações</button>
                 <button id="faq" onclick="faq()">FAQ</button>
                 <div>
@@ -77,13 +94,20 @@
                     <button id="chat" onclick="chat()">Chat</button>
                 </div>
             </div>
+            
+
         </div>
     </footer>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/2.25.0/index.min.js"></script>
-    <script src="../model/firestore.js"></script>
-    <script src="../controller/script.js"></script>
+
+    <form id="register-form">
+        
+     </form>
+     
+     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+     <script src="../controller/script.js"></script>
+     <script src="../model/serviceauth.js"></script>
+    
 </body>
 </html>

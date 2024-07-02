@@ -1,0 +1,148 @@
+body {
+    margin: 0;
+}
+
+.container-esquerda {
+    float: left;
+    width: 50%; 
+    min-height: 100vh; 
+    background-color: #68D8B0;
+    color: #fff;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    flex-direction: column;
+    padding: 20px;
+}
+#titulo-cadastro{
+    font-size: 60px;
+    font-family: "Roboto";
+    font-weight: 700;
+    color: rgba(255, 255, 255, 1);
+    width: 421px;
+    height: 140px;
+}
+#subtitulo{
+    font-size: 20px;
+    font-family: "Roboto";
+    font-weight: 400;
+    color: rgba(255, 255, 255, 1);
+    width: 428px;
+    height: 46px;
+    margin-top: 50px;
+}
+#seCadastrar{
+    margin-top: 50px;
+}
+
+
+
+
+
+.container-direita {
+    width: 50%;
+    min-height: 100vh;
+    background-color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+#titulo-login{
+    font-size: 50px;
+    font-family: "Roboto";
+    font-weight: 700;
+    color: rgba(104, 216, 176, 1);
+    width: 470px;
+    height: 59px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+}
+
+button#seCadastrar{
+    padding: 10px;
+    background-color: #68D8B0;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: "Roboto";
+    font-weight: 700;
+    width: 200px;
+    font-size: 20px;
+    height: 70px;
+    border-radius: 20px;
+    border: 2px solid white;
+}
+button#entrar{
+    margin-top: 8px;
+    padding: 10px;
+    background-color: #68D8B0;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: "Roboto";
+    font-weight: 700;
+    width: 450px;
+    font-size: 20px;
+    height: 50px;
+    border-radius: 20px;
+    border: white;
+}
+
+.form form a{
+    font-size: 12px;
+}
+button:hover {
+    color: black;
+}
+
+
+button#cadastre-se{
+    margin-top: 8px;
+    padding: 10px;
+    background-color: #68D8B0;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: "Roboto";
+    font-weight: 700;
+    width: 450px;
+    font-size: 20px;
+    height: 50px;
+    border-radius: 20px;
+    border: white;
+}
+button#voltarLogin{
+    margin-top: 8px;
+    padding: 10px;
+    background-color: #68D8B0;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: "Roboto";
+    font-weight: 700;
+    width: 450px;
+    font-size: 20px;
+    height: 50px;
+    border-radius: 20px;
+    border: white;
+}
+
+
+

@@ -34,23 +34,6 @@ button#Sair {
     font-weight: bold;
     border-radius: 5px;
 }
-
-#user-button{
-    margin-left: auto;
-    margin-right: 40px;;
-    margin-top: 45px;
-}
-button#User{
-    padding: 10px 20px;
-    background-color: #68D8B0;
-    color: #000;
-    border: none;
-    cursor: pointer;
-    font-size: 25px;
-    font-family: "Roboto", sans-serif;
-    font-weight: bold;
-    border-radius: 5px;
-}
    
 
 
@@ -479,18 +462,4 @@ button#salvarAlteracoes {
     border-radius: 5px; 
     box-sizing: border-box; 
     margin-bottom: 10px;
-}
-
-button#editarficha{
-    font-size: 20px;
-    font-family: "Roboto";
-    width: 351px;
-    height: 47px;
-    flex-shrink: 0;
-    border-radius: 5px;
-    border: 1px solid #010101;
-    background: #FBFBFB;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    font-weight: bold;
-    margin-top: 10px;
 }
