@@ -27,7 +27,7 @@ function salvarAnimal() {
     const observacoes = formCadastroAnimal.observacoes.value.trim();
   
     
-    if (!nome || !datanasc || !especie || !idade || !sexo || !raca || !porte || !observacoes) {
+    if (!nome || !datanasc || !especie || !idade || !sexo || !raca || !porte) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
@@ -240,7 +240,8 @@ function salvarEdicao() {
     })
     .then(() => {
         alert("Alterações salvas com sucesso.");
-        
+        window.location.href = 'inicial.html';
+
         limparCampos();
         
         carregarAnimaisSelecionar();
