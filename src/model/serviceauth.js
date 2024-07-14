@@ -46,109 +46,46 @@ function RedefinirSenhaModel(email) {
             console.log('E-mail de redefinição de senha enviado.');
         });
 }
+//////////////////////////////////////////////////// edição
 
-export { loginModel, registerModel, logoutModel, RedefinirSenhaModel };
+function salvarEdicaoUserModel(novoNome, cpf, novoEmail, novaSenha, userId) {
+    const userRef = firebase.firestore().collection('users').doc(userId);
+
+    return userRef.update({
+        nome: novoNome,
+        cpf: cpf
+    }).then(() => {
+        const user = firebase.auth().currentUser;
+
+        // Atualizar o email, se necessário
+        if (user.email !== novoEmail) {
+            return user.updateEmail(novoEmail);
+        }
+    }).then(() => {
+        // Atualizar a senha, se necessário
+        if (novaSenha) {
+            const user = firebase.auth().currentUser;
+            return user.updatePassword(novaSenha);
+        }
+    });
+}
+
+function cancelarEdicaoUserModel() {
+    window.location.href = "../views/inicial.html";
+}
+
+function apagarUserModel() {
+    const user = firebase.auth().currentUser;
+    const userRef = firebase.firestore().collection('users').doc(user.uid);
+
+    return userRef.delete().then(() => {
+        return user.delete();
+    });
+}
+
+export { loginModel, registerModel, logoutModel, RedefinirSenhaModel, salvarEdicaoUserModel, cancelarEdicaoUserModel, apagarUserModel};
 /*
-    function Sair() {
-        firebase.auth().signOut()
-            .then(() => {
-                console.log("Usuário deslogado com sucesso.");
-                localStorage.removeItem('user');
-                window.location.href = "../views/login.html";
-            })
-            .catch((error) => {
-                console.error('Erro ao fazer logout:', error);
-            });
-    }
-    window.Sair = Sair;
-
-    function validateForm(event) {
-        event.preventDefault();
-
-        var password = document.getElementById("password");
-        var confirmPassword = document.getElementById("confirmar_password");
-        var passwordLengthMessage = document.getElementById("password-length-message");
-        var passwordMessage = document.getElementById("password-message");
-
-        if (!password || !confirmPassword || !passwordLengthMessage || !passwordMessage) {
-            console.error("Elementos de formulário não encontrados.");
-            return;
-        }
-
-        var passwordValue = password.value;
-        var confirmPasswordValue = confirmPassword.value;
-
-        if (passwordValue.length < 6) {
-            passwordLengthMessage.textContent = "A senha deve ter pelo menos 6 caracteres.";
-            return;
-        } else {
-            passwordLengthMessage.textContent = "";
-        }
-
-        if (passwordValue !== confirmPasswordValue) {
-            passwordMessage.textContent = "As senhas não coincidem.";
-            return; 
-        } else {
-            passwordMessage.textContent = "";
-        }
-
-        register();
-    }
-    window.validateForm = validateForm;
-
-    function register() {
-        var email = document.getElementById("email").value;
-        var password = document.getElementById("password").value;
-        var nome = document.getElementById("nome").value;
-        var cpf = document.getElementById("cpf_cnpj").value;
     
-        if (!email || !password || !nome || !cpf) {
-            console.error("Elementos de e-mail, senha, nome ou CPF não encontrados.");
-            return;
-        }
-    
-        firebase.auth().createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                var user = userCredential.user;
-                return firebase.firestore().collection('users').doc(user.uid).set({
-                    nome: nome,
-                    cpf: cpf
-                });
-            })
-            .then(() => {
-                console.log("Usuário e dados adicionais cadastrados com sucesso!");
-                window.location.href = "../views/login.html";
-            })
-            .catch(error => {
-                console.error("Erro ao criar usuário:", error);
-                alert(getErrorMessage(error));
-            });
-    }
-    window.register = register;
-    
-
-    function RedefinirSenha() {
-        var email = document.getElementById('email');
-
-        if (!email) {
-            console.error("Elemento de e-mail não encontrado.");
-            return;
-        }
-
-        firebase.auth().sendPasswordResetEmail(email.value)
-            .then(() => {
-                alert('E-mail enviado com sucesso para redefinição de senha.');
-                window.location.href = "../views/login.html";
-            })
-            .catch((error) => {
-                if (error.code === 'auth/user-not-found') {
-                    alert('Não existe uma conta associada a este e-mail. Por favor, verifique o e-mail fornecido.');
-                } else {
-                    alert('Ocorreu um erro ao enviar o e-mail de redefinição de senha. Por favor, tente novamente mais tarde.');
-                }
-            });
-    }
-    window.RedefinirSenha = RedefinirSenha;
 
     function getErrorMessage(error) {
         if (error.code == "auth/email-already-in-use") {

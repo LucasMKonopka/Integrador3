@@ -1,4 +1,4 @@
-import { loginModel, registerModel, logoutModel, RedefinirSenhaModel } from '../../model/serviceauth.js';
+import { loginModel, registerModel, logoutModel, RedefinirSenhaModel, salvarEdicaoUserModel, cancelarEdicaoUserModel, apagarUserModel } from '../../model/serviceauth.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged(function(user) {
@@ -115,8 +115,96 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert("Erro ao enviar e-mail de redefinição de senha: " + error.message);
             });
     }
-
     window.RedefinirSenha = RedefinirSenha;
+
     document.getElementById('register-form').addEventListener('submit', validateForm);
+    
+///////////////////////// edição
+
+firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+        const userId = user.uid;
+        // Obtém email diretamente do objeto user
+        document.getElementById('email').value = user.email || '';
+
+        firebase.firestore().collection('users').doc(userId).get()
+            .then((doc) => {
+                if (doc.exists) {
+                    const userData = doc.data();
+                    document.getElementById('novoNome').value = userData.nome || '';
+                    document.getElementById('cpf').value = userData.cpf || '';
+                } else {
+                    console.log("Nenhum documento encontrado.");
+                }
+            })
+            .catch((error) => {
+                console.error("Erro ao obter documento:", error);
+            });
+    } else {
+        console.log("Nenhum usuário autenticado.");
+    }
+});
+/*
+// Botões de edição
+document.getElementById('salvarAlteracoes').addEventListener('click', salvarEdicaoUser);
+document.getElementById('cancelarAlteracoes').addEventListener('click', cancelarEdicaoUser);
+document.getElementById('excluirAnimal').addEventListener('click', apagarUser);
+*/
+function salvarEdicaoUser() {
+    const novoNome = document.getElementById('novoNome').value;
+    const cpf = document.getElementById('cpf').value;
+    const novoEmail = document.getElementById('email').value;
+    const novaSenha = document.getElementById('novaSenha').value;
+    const confirmarNovaSenha = document.getElementById('confirmarNovaSenha').value;
+
+    if (novaSenha && novaSenha !== confirmarNovaSenha) {
+        alert('As senhas não coincidem.');
+        return;
+    }
+
+    const user = firebase.auth().currentUser;
+    if (user) {
+        const currentEmail = user.email;
+        const currentPassword = prompt('Para atualizar o e-mail e a senha, por favor insira sua senha atual:');
+
+        // Reautenticar o usuário
+        const credentials = firebase.auth.EmailAuthProvider.credential(currentEmail, currentPassword);
+        user.reauthenticateWithCredential(credentials)
+            .then(() => {
+                return salvarEdicaoUserModel(novoNome, cpf, novoEmail, novaSenha, user.uid);
+            })
+            .then(() => {
+                alert('Dados atualizados com sucesso.');
+                window.location.href = "../views/inicial.html";
+            })
+            .catch((error) => {
+                console.error("Erro ao atualizar dados do usuário:", error);
+                alert("Erro ao atualizar dados do usuário: " + error.message);
+            });
+    }
+}
+window.salvarEdicaoUser = salvarEdicaoUser;
+
+function cancelarEdicaoUser() {
+    cancelarEdicaoUserModel();
+}
+
+function apagarUser() {
+    const confirmation = confirm('Tem certeza de que deseja excluir o usuário? Esta ação é irreversível.');
+
+    if (confirmation) {
+        apagarUserModel()
+            .then(() => {
+                alert('Usuário excluído com sucesso.');
+                window.location.href = "../views/login.html";
+            })
+            .catch((error) => {
+                console.error("Erro ao excluir usuário:", error);
+                alert("Erro ao excluir usuário: " + error.message);
+            });
+    }
+}
+
+
 });
 
