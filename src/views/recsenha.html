@@ -32,11 +32,12 @@
         <input type = "Email" id = "email" required>
         <input id = "formulario" type="submit" value="" style = "display: none;">
     </form>
-    
+
+    <div id="mensagem">
+        <!-- Aqui será exibida a mensagem de sucesso -->
+    </div>
 
     
-
-
     <footer>
         <div id="containerbaixo">
 
@@ -57,6 +58,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
     <script type="module" src="/public/js/app.js"></script>
     <script type="module" src="/src/controller/auth/controllerAuth.js"></script>
     <script src="/src/controller/rotas/script.js"></script>

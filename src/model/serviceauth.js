@@ -40,14 +40,14 @@ function logoutModel() {
         });
 }
 
-function resetPasswordModel(email) {
+function RedefinirSenhaModel(email) {
     return firebase.auth().sendPasswordResetEmail(email)
         .then(() => {
             console.log('E-mail de redefinição de senha enviado.');
         });
 }
 
-export { loginModel, registerModel, logoutModel, resetPasswordModel };
+export { loginModel, registerModel, logoutModel, RedefinirSenhaModel };
 /*
     function Sair() {
         firebase.auth().signOut()

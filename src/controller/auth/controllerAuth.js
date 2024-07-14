@@ -1,4 +1,4 @@
-import { loginModel, registerModel, logoutModel, resetPasswordModel } from '../../model/serviceauth.js';
+import { loginModel, registerModel, logoutModel, RedefinirSenhaModel } from '../../model/serviceauth.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged(function(user) {
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch((error) => {
                 console.error("Erro ao fazer login:", error);
-                alert("Erro ao fazer login: " + error.message);
+                alert('Erro ao fazer login! Email ou senha incorreto!');
             });
     }
     window.login = login;
@@ -102,20 +102,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     window.register = register;
 
-    function resetPassword() {
-        var email = document.getElementById('reset-email').value;
-
-        resetPasswordModel(email)
+    function RedefinirSenha() {
+        var email = document.getElementById('email').value;
+    
+        RedefinirSenhaModel(email)
             .then(() => {
                 console.log('E-mail de redefinição de senha enviado.');
-                // Adicione aqui o código para mostrar uma mensagem de sucesso ao usuário, se necessário
+                alert('E-mail de redefinição de senha enviado com sucesso! Verifique sua caixa de entrada.');
             })
             .catch((error) => {
                 console.error("Erro ao enviar e-mail de redefinição de senha:", error);
                 alert("Erro ao enviar e-mail de redefinição de senha: " + error.message);
             });
     }
-    window.resetPassword = resetPassword;
+
+    window.RedefinirSenha = RedefinirSenha;
     document.getElementById('register-form').addEventListener('submit', validateForm);
 });
 
