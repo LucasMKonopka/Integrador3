@@ -18,37 +18,37 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         console.error("Erro ao configurar a persistência de autenticação:", error);
     });
 
-    document.addEventListener('DOMContentLoaded', function() {
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                console.log("Usuário já autenticado:", user);
-                console.log("User ID:", user.uid);
-                console.log("User Email:", user.email);
-                if (window.location.href.includes('login.html')) {
-                    window.location.href = "../views/inicial.html";
-                }
-            } else {
-                console.log("Usuário não autenticado.");
-            }
+function loginModel(email, password) {
+    return firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            return userCredential.user;
         });
+}
 
-    function login() {
-        var email = document.getElementById('email').value;
-        var password = document.getElementById('password').value;
+function registerModel(email, password, additionalData) {
+    return firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            return db.collection('users').doc(user.uid).set(additionalData);
+        });
+}
 
-        firebase.auth().signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                var user = userCredential.user;
-                console.log("Usuário logado com sucesso:", user);
-                window.location.href = "../views/inicial.html";
-            })
-            .catch((error) => {
-                console.error("Erro ao fazer login:", error);
-                alert("Erro ao fazer login: " + error.message);
-            });
-    }
-    window.login = login;
+function logoutModel() {
+    return firebase.auth().signOut()
+        .then(() => {
+            console.log("Usuário deslogado com sucesso.");
+        });
+}
 
+function resetPasswordModel(email) {
+    return firebase.auth().sendPasswordResetEmail(email)
+        .then(() => {
+            console.log('E-mail de redefinição de senha enviado.');
+        });
+}
+
+export { loginModel, registerModel, logoutModel, resetPasswordModel };
+/*
     function Sair() {
         firebase.auth().signOut()
             .then(() => {
@@ -158,7 +158,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     }
 
     document.getElementById('register-form').addEventListener('submit', validateForm);
-});
+
 ////////////////////
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -338,4 +338,4 @@ function apagarUser() {
 window.apagarUser = apagarUser;
 
 
-
+*/
