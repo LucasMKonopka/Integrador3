@@ -193,17 +193,32 @@ function apagarUser() {
     const confirmation = confirm('Tem certeza de que deseja excluir o usuário? Esta ação é irreversível.');
 
     if (confirmation) {
-        apagarUserModel()
-            .then(() => {
-                alert('Usuário excluído com sucesso.');
-                window.location.href = "../views/login.html";
-            })
-            .catch((error) => {
-                console.error("Erro ao excluir usuário:", error);
-                alert("Erro ao excluir usuário: " + error.message);
-            });
+        const user = firebase.auth().currentUser;
+        if (user) {
+            const currentEmail = user.email;
+            const currentPassword = prompt('Para excluir o usuário, por favor insira sua senha atual:');
+            
+            // Reautenticar o usuário
+            const credentials = firebase.auth.EmailAuthProvider.credential(currentEmail, currentPassword);
+            user.reauthenticateWithCredential(credentials)
+                .then(() => {
+                    return apagarUserModel(user.uid);
+                })
+                .then(() => {
+                    return user.delete();
+                })
+                .then(() => {
+                    alert('Usuário excluído com sucesso.');
+                    window.location.href = "../views/login.html";
+                })
+                .catch((error) => {
+                    console.error("Erro ao excluir usuário:", error);
+                    alert("Erro ao excluir usuário: " + error.message);
+                });
+        }
     }
 }
+window.apagarUser = apagarUser;
 
 
 });

@@ -74,12 +74,26 @@ function cancelarEdicaoUserModel() {
     window.location.href = "../views/inicial.html";
 }
 
-function apagarUserModel() {
-    const user = firebase.auth().currentUser;
-    const userRef = firebase.firestore().collection('users').doc(user.uid);
+function apagarUserModel(userId) {
+    const userRef = firebase.firestore().collection('users').doc(userId);
+    const fichasRef = firebase.firestore().collection('fichas').where('userId', '==', userId);
+    const animaisRef = firebase.firestore().collection('animais').where('userId', '==', userId);
 
-    return userRef.delete().then(() => {
-        return user.delete();
+    return firebase.firestore().runTransaction(async (transaction) => {
+        // Excluir todas as fichas do usuário
+        const fichasSnapshot = await fichasRef.get();
+        fichasSnapshot.forEach((doc) => {
+            transaction.delete(doc.ref);
+        });
+
+        // Excluir todos os animais do usuário
+        const animaisSnapshot = await animaisRef.get();
+        animaisSnapshot.forEach((doc) => {
+            transaction.delete(doc.ref);
+        });
+
+        // Excluir o documento do usuário
+        transaction.delete(userRef);
     });
 }
 
