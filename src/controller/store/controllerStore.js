@@ -1,6 +1,8 @@
 //cadastrar animais
 
+
 import { salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal} from '../../model/firestore.js';
+
 
 
 function salvarAnimal() {
@@ -49,7 +51,9 @@ window.salvarAnimal = salvarAnimal;
 //criar ficha para o animal
 
 document.addEventListener('DOMContentLoaded', function() {
+
     if (window.location.href.includes('novaficha.html') /*|| window.location.href.includes('editarAnimal.html')*/) {
+
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 CarregarAnimais();
@@ -124,6 +128,7 @@ function cancelarFicha() {
         window.location.href = "inicial.html";
     }
 }
+
 
 
 //Editar animal
@@ -272,3 +277,4 @@ function cancelarEdicao() {
 function limparCampos() {
     document.getElementById('formCadastroAnimal').reset();
 }
+

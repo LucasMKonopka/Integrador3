@@ -48,6 +48,7 @@ function salvarFichaModel(fichaAtendimentoData) {
 }
 
 
+
 //Editar animal 
 
 function buscarAnimais(userId) {
@@ -82,6 +83,7 @@ function deletarAnimal(id) {
 }
 
 export {salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal}
+
 
 
 
