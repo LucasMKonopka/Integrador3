@@ -17,7 +17,7 @@ function seCadastrar(){
     window.location.href = "cadastro.html";
 }
 function VoltarLogin(){
-    window.location.href = "Login.html";
+    window.location.href = "login.html";
 }
 function editaranimal(){
     window.location.href = "editarAnimal.html";
@@ -25,5 +25,6 @@ function editaranimal(){
 function User(){
     window.location.href = "editarUsuario.html";
 }
+
 
 

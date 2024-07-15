@@ -11,7 +11,88 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 
+//cadastrar animais
+function salvarAnimalModel(animalData) {
+    const userId = firebase.auth().currentUser.uid;
+    animalData.userId = userId;
 
+    return db.collection('animais').add(animalData)
+        .then((docRef) => {
+            console.log("Animal cadastrado com ID: ", docRef.id);
+        })
+        .catch((error) => {
+            console.error("Erro ao cadastrar animal: ", error);
+            throw error;
+        });
+}
+
+//criar ficha para o animal
+
+
+function carregarAnimalsModel() {
+    const userId = firebase.auth().currentUser.uid;
+    return db.collection('animais')
+        .where('userId', '==', userId)
+        .get()
+        .then(snapshot => {
+            const animals = [];
+            snapshot.forEach(doc => {
+                animals.push({ id: doc.id, ...doc.data() });
+            });
+            return animals;
+        });
+}
+
+function salvarFichaModel(fichaAtendimentoData) {
+    return db.collection('fichas').add(fichaAtendimentoData);
+}
+
+
+//Editar animal 
+
+function buscarAnimais(userId) {
+    return db.collection('animais').where('userId', '==', userId).get().then((querySnapshot) => {
+        let animais = [];
+        querySnapshot.forEach((doc) => {
+            animais.push({ id: doc.id, ...doc.data() });
+        });
+        console.log('Animais buscados:', animais);  // Debugging
+        return animais;
+    }).catch((error) => {
+        console.error("Erro ao buscar animais:", error);
+        throw error;
+    });
+}
+
+function buscarAnimalPorId(id) {
+    return db.collection('animais').doc(id).get().then((doc) => {
+        if (!doc.exists) {
+            throw new Error('Animal não encontrado.');
+        }
+        return { id: doc.id, ...doc.data() };
+    });
+}
+
+function atualizarAnimal(id, dados) {
+    return db.collection('animais').doc(id).update(dados);
+}
+
+function deletarAnimal(id) {
+    return db.collection('animais').doc(id).delete();
+}
+
+export {salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal}
+
+
+
+
+
+
+
+
+
+
+/*
 const formCadastroAnimal = document.getElementById('formCadastroAnimal');
 
 
@@ -27,7 +108,7 @@ function salvarAnimal() {
     const observacoes = formCadastroAnimal.observacoes.value.trim();
   
     
-    if (!nome || !datanasc || !especie || !idade || !sexo || !raca || !porte || !observacoes) {
+    if (!nome || !datanasc || !especie || !idade || !sexo || !raca || !porte) {
       alert("Por favor, preencha todos os campos.");
       return;
     }
@@ -240,7 +321,8 @@ function salvarEdicao() {
     })
     .then(() => {
         alert("Alterações salvas com sucesso.");
-        
+        window.location.href = 'inicial.html';
+
         limparCampos();
         
         carregarAnimaisSelecionar();
@@ -734,3 +816,4 @@ async function apagarFicha() {
         }
     }
 }
+*/
