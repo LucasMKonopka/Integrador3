@@ -11,7 +11,55 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 
+//cadastrar animais
+function salvarAnimalModel(animalData) {
+    const userId = firebase.auth().currentUser.uid;
+    animalData.userId = userId;
 
+    return db.collection('animais').add(animalData)
+        .then((docRef) => {
+            console.log("Animal cadastrado com ID: ", docRef.id);
+        })
+        .catch((error) => {
+            console.error("Erro ao cadastrar animal: ", error);
+            throw error;
+        });
+}
+
+//criar ficha para o animal
+
+
+function carregarAnimalsModel() {
+    const userId = firebase.auth().currentUser.uid;
+    return db.collection('animais')
+        .where('userId', '==', userId)
+        .get()
+        .then(snapshot => {
+            const animals = [];
+            snapshot.forEach(doc => {
+                animals.push({ id: doc.id, ...doc.data() });
+            });
+            return animals;
+        });
+}
+
+function salvarFichaModel(fichaAtendimentoData) {
+    return db.collection('fichas').add(fichaAtendimentoData);
+}
+
+
+export {salvarAnimalModel, salvarFichaModel, carregarAnimalsModel}
+
+
+
+
+
+
+
+
+
+
+/*
 const formCadastroAnimal = document.getElementById('formCadastroAnimal');
 
 
@@ -735,3 +783,4 @@ async function apagarFicha() {
         }
     }
 }
+*/
