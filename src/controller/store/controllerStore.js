@@ -1,6 +1,7 @@
 
 import { salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal,
-    carregarAnimais , buscarFichas, obterNomeAnimal } from '../../model/firestore.js';
+    carregarAnimais , buscarFichas, obterNomeAnimal,
+    buscarFicha, atualizarFicha, deletarFicha } from '../../model/firestore.js';
 
 
 
@@ -368,6 +369,77 @@ function editarFicha(id) {
 window.carregarAnimaisBuscar = carregarAnimaisBuscar;
 window.buscarFichasDoAnimal = buscarFichasDoAnimal;
 window.editarFicha = editarFicha;
+
+
+
+// Editar fichas de atendimento
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const params = new URLSearchParams(window.location.search);
+    const fichaId = params.get('id');
+
+    if (fichaId) {
+        await preencherFormulario(fichaId);
+    }
+});
+
+async function preencherFormulario(id) {
+    try {
+        const ficha = await buscarFicha(id);
+        if (ficha) {
+            document.getElementById('dataAtendimento').value = ficha.dataAtendimento || '';
+            document.getElementById('nomeVeterinario').value = ficha.nomeVeterinario || '';
+            document.getElementById('procedimento').value = ficha.procedimento || '';
+        } else {
+            console.error("Ficha não encontrada.");
+        }
+    } catch (error) {
+        console.error("Erro ao preencher formulário:", error);
+    }
+}
+
+async function salvarEdicaoFicha() {
+    const dataAtendimento = document.getElementById('dataAtendimento').value;
+    const nomeVeterinario = document.getElementById('nomeVeterinario').value;
+    const procedimento = document.getElementById('procedimento').value;
+
+    const params = new URLSearchParams(window.location.search);
+    const fichaId = params.get('id');
+
+    try {
+        await atualizarFicha(fichaId, {
+            dataAtendimento,
+            nomeVeterinario,
+            procedimento
+        });
+        alert("Ficha atualizada com sucesso!");
+        window.location.href = "buscarficha.html";
+    } catch (error) {
+        console.error("Erro ao atualizar ficha:", error);
+        alert("Erro ao atualizar ficha. Tente novamente.");
+    }
+}
+
+async function apagarFicha() {
+    const params = new URLSearchParams(window.location.search);
+    const fichaId = params.get('id');
+    
+    const confirmacao = confirm("Tem certeza que deseja excluir esta ficha?");
+    if (confirmacao) {
+        try {
+            await deletarFicha(fichaId);
+            alert("Ficha excluída com sucesso!");
+            window.location.href = "buscarficha.html";
+        } catch (error) {
+            console.error("Erro ao excluir ficha:", error);
+            alert("Erro ao excluir ficha. Tente novamente.");
+        }
+    }
+}
+
+window.preencherFormulario = preencherFormulario;
+window.salvarEdicaoFicha = salvarEdicaoFicha;
+window.apagarFicha = apagarFicha;
 
 
 /*

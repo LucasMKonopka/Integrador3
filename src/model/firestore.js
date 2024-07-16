@@ -143,9 +143,42 @@ async function obterNomeAnimal(animalId) {
 }
 
 
+// Edição da ficha de atendimento
+
+
+
+
+async function buscarFicha(id) {
+    try {
+        const doc = await db.collection('fichas').doc(id).get();
+        return doc.exists ? doc.data() : null;
+    } catch (error) {
+        console.error("Erro ao buscar ficha:", error);
+        throw error;
+    }
+}
+
+async function atualizarFicha(id, dados) {
+    try {
+        await db.collection('fichas').doc(id).update(dados);
+    } catch (error) {
+        console.error("Erro ao atualizar ficha:", error);
+        throw error;
+    }
+}
+
+async function deletarFicha(id) {
+    try {
+        await db.collection('fichas').doc(id).delete();
+    } catch (error) {
+        console.error("Erro ao excluir ficha:", error);
+        throw error;
+    }
+}
 
 export {salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal,
-    carregarAnimais, buscarFichas, obterNomeAnimal}
+    carregarAnimais, buscarFichas, obterNomeAnimal,
+    buscarFicha, atualizarFicha, deletarFicha}
 
 
 
