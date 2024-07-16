@@ -1,7 +1,6 @@
-//cadastrar animais
 
-
-import { salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal} from '../../model/firestore.js';
+import { salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal,
+    carregarAnimais , buscarFichas, obterNomeAnimal } from '../../model/firestore.js';
 
 
 
@@ -277,3 +276,157 @@ function limparCampos() {
     document.getElementById('formCadastroAnimal').reset();
 }
 
+
+
+//Buscar ficha do animal
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            console.log("Usuário já autenticado:", user);
+            
+            if (window.location.href.includes('login.html')) {
+                window.location.href = "./inicial.html";
+            }
+            
+            if (window.location.href.includes('buscarficha.html')) {
+                carregarAnimaisBuscar();
+            }
+        } else {
+            console.log("Usuário não autenticado.");
+        }
+    });
+});
+
+async function carregarAnimaisBuscar() {
+    const userId = firebase.auth().currentUser.uid;
+    const selectAnimal = document.getElementById('selectAnimalBuscar');
+    selectAnimal.innerHTML = ""; 
+
+    const optionEmBranco = document.createElement('option');
+    optionEmBranco.value = "";
+    optionEmBranco.textContent = "Selecione um animal";
+    selectAnimal.appendChild(optionEmBranco);
+
+    try {
+        const animais = await carregarAnimais(userId);
+        animais.forEach(animal => {
+            const optionAnimal = document.createElement('option');
+            optionAnimal.value = animal.id;
+            optionAnimal.textContent = animal.nome;
+            selectAnimal.appendChild(optionAnimal);
+        });
+    } catch (error) {
+        console.error("Erro ao carregar animais:", error);
+    }
+}
+
+async function buscarFichasDoAnimal() {
+    const animalId = document.getElementById('selectAnimalBuscar').value;
+
+    if (!animalId) {
+        console.error("Nenhum animal selecionado.");
+        return;
+    }
+
+    const fichasDeAtendimentoList = document.getElementById('fichasDeAtendimento').getElementsByTagName('tbody')[0];
+    fichasDeAtendimentoList.innerHTML = "";
+
+    try {
+        const fichas = await buscarFichas(animalId);
+        if (fichas.length === 0) {
+            const noFichasMessage = document.createElement('tr');
+            const noFichasDataCell = document.createElement('td');
+            noFichasDataCell.colSpan = 5; 
+            noFichasDataCell.textContent = "Nenhuma ficha de atendimento encontrada para este animal.";
+            noFichasMessage.appendChild(noFichasDataCell);
+            fichasDeAtendimentoList.appendChild(noFichasMessage);
+        } else {
+            for (const ficha of fichas) {
+                const nomeAnimal = await obterNomeAnimal(ficha.animalId);
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td>${ficha.dataAtendimento}</td>
+                    <td>${nomeAnimal}</td>
+                    <td>${ficha.nomeVeterinario}</td>
+                    <td>${ficha.procedimento}</td>
+                    <td><button onclick="editarFicha('${ficha.id}')">Editar</button></td>
+                `;
+                fichasDeAtendimentoList.appendChild(newRow);
+            }
+        }
+    } catch (error) {
+        console.error("Erro ao buscar fichas de atendimento:", error);
+    }
+}
+
+function editarFicha(id) {
+    window.location.href = `editarficha.html?id=${id}`;
+}
+
+window.carregarAnimaisBuscar = carregarAnimaisBuscar;
+window.buscarFichasDoAnimal = buscarFichasDoAnimal;
+window.editarFicha = editarFicha;
+
+
+/*
+async function carregarAnimaisBuscar() {
+    const selectAnimal = document.getElementById('selectAnimalBuscar');
+    selectAnimal.innerHTML = ""; 
+
+    const optionEmBranco = document.createElement('option');
+    optionEmBranco.value = "";
+    optionEmBranco.textContent = "Selecione um animal";
+    selectAnimal.appendChild(optionEmBranco);
+
+    const animais = await carregarAnimaisDoUsuario();
+    animais.forEach(animal => {
+        const optionAnimal = document.createElement('option');
+        optionAnimal.value = animal.id;
+        optionAnimal.textContent = animal.nome;
+        selectAnimal.appendChild(optionAnimal);
+    });
+}
+window.carregarAnimaisBuscar = carregarAnimaisBuscar;
+
+async function buscarFichasDoAnimal() {
+    const animalId = document.getElementById('selectAnimalBuscar').value;
+
+    if (!animalId) {
+        console.error("Nenhum animal selecionado.");
+        return;
+    }
+
+    const fichasDeAtendimentoList = document.getElementById('fichasDeAtendimento').getElementsByTagName('tbody')[0];
+    fichasDeAtendimentoList.innerHTML = "";
+
+    const fichas = await buscarFichasPorAnimal(animalId);
+    if (fichas.length === 0) {
+        const noFichasMessage = document.createElement('tr');
+        const noFichasDataCell = document.createElement('td');
+        noFichasDataCell.colSpan = 5; 
+        noFichasDataCell.textContent = "Nenhuma ficha de atendimento encontrada para este animal.";
+        noFichasMessage.appendChild(noFichasDataCell);
+        fichasDeAtendimentoList.appendChild(noFichasMessage);
+    } else {
+        for (const ficha of fichas) {
+            const nomeAnimal = await obterNomeAnimal(ficha.animalId);
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${ficha.dataAtendimento}</td>
+                <td>${nomeAnimal}</td>
+                <td>${ficha.nomeVeterinario}</td>
+                <td>${ficha.procedimento}</td>
+                <td><button onclick="editarFicha('${ficha.id}')">Editar</button></td>
+            `;
+            fichasDeAtendimentoList.appendChild(newRow);
+        }
+    }
+}
+window.buscarFichasDoAnimal = buscarFichasDoAnimal;
+
+function editarFicha(id) {
+    window.location.href = `editarficha.html?id=${id}`;
+}
+window.editarFicha = editarFicha;*/

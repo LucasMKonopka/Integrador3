@@ -81,18 +81,15 @@ function atualizarAnimal(id, dados) {
 function deletarAnimal(id) {
     const batch = db.batch();
 
-    // Exclui o documento do animal
     const animalRef = db.collection('animais').doc(id);
     batch.delete(animalRef);
 
-    // Busca todas as fichas associadas ao animal
     return db.collection('fichas').where('animalId', '==', id).get()
         .then(snapshot => {
             snapshot.forEach(doc => {
                 batch.delete(doc.ref);
             });
 
-            // Comite as exclusões em batch
             return batch.commit();
         })
         .then(() => {
@@ -104,7 +101,51 @@ function deletarAnimal(id) {
         });
 }
 
-export {salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal}
+
+//Buscar ficha do animal
+
+async function carregarAnimais(userId) {
+    try {
+        const querySnapshot = await db.collection('animais').where('userId', '==', userId).get();
+        const animais = [];
+        querySnapshot.forEach(doc => {
+            animais.push({ id: doc.id, nome: doc.data().nome });
+        });
+        return animais;
+    } catch (error) {
+        console.error("Erro ao carregar animais:", error);
+        throw error;
+    }
+}
+
+async function buscarFichas(animalId) {
+    try {
+        const querySnapshot = await db.collection('fichas').where('animalId', '==', animalId).get();
+        const fichas = [];
+        querySnapshot.forEach(doc => {
+            fichas.push({ id: doc.id, ...doc.data() });
+        });
+        return fichas;
+    } catch (error) {
+        console.error("Erro ao buscar fichas de atendimento:", error);
+        throw error;
+    }
+}
+
+async function obterNomeAnimal(animalId) {
+    try {
+        const doc = await db.collection('animais').doc(animalId).get();
+        return doc.exists ? doc.data().nome : "Desconhecido";
+    } catch (error) {
+        console.error("Erro ao obter nome do animal:", error);
+        throw error;
+    }
+}
+
+
+
+export {salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal,
+    carregarAnimais, buscarFichas, obterNomeAnimal}
 
 
 
