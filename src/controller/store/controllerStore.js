@@ -239,10 +239,7 @@ function salvarEdicao() {
 }
 
 function confirmarExcluirAnimal() {
-    const confirmation = confirm("Tem certeza que deseja excluir este animal?");
-    if (confirmation) {
-        apagarAnimal();
-    }
+    apagarAnimal();
 }
 
 function apagarAnimal() {
@@ -254,15 +251,17 @@ function apagarAnimal() {
         return;
     }
 
-    deletarAnimal(animalId)
-        .then(() => {
-            alert("Animal excluído com sucesso.");
-            window.location.href = 'inicial.html';
-        })
-        .catch((error) => {
-            console.error("Erro ao excluir o animal:", error);
-            alert("Erro ao excluir o animal. Por favor, tente novamente mais tarde.");
-        });
+    if (confirm("Tem certeza de que deseja excluir este animal e todas as suas fichas?")) {
+        deletarAnimal(animalId)
+            .then(() => {
+                alert("Animal e suas fichas excluídos com sucesso.");
+                window.location.href = 'inicial.html';
+            })
+            .catch((error) => {
+                console.error("Erro ao excluir o animal e suas fichas:", error);
+                alert("Erro ao excluir o animal e suas fichas. Por favor, tente novamente mais tarde.");
+            });
+    }
 }
 
 function cancelarEdicao() {
