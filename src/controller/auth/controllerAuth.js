@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Funções de login, logout, registro, redefinição de senha
+    // funções de login, logout, registro, redefinição de senha
     function login() {
         var email = document.getElementById('email').value;
         var password = document.getElementById('password').value;
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('register-form').addEventListener('submit', validateForm);
 
-    // Carregar dados do usuário apenas na página de edição
+    // carregar dados do usuário apenas na página de edição
     if (window.location.href.includes('editarUsuario.html')) {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {

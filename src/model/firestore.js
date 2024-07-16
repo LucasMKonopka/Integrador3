@@ -48,6 +48,7 @@ function salvarFichaModel(fichaAtendimentoData) {
 }
 
 
+
 //Editar animal 
 
 function buscarAnimais(userId) {
@@ -78,10 +79,33 @@ function atualizarAnimal(id, dados) {
 }
 
 function deletarAnimal(id) {
-    return db.collection('animais').doc(id).delete();
+    const batch = db.batch();
+
+    // Exclui o documento do animal
+    const animalRef = db.collection('animais').doc(id);
+    batch.delete(animalRef);
+
+    // Busca todas as fichas associadas ao animal
+    return db.collection('fichas').where('animalId', '==', id).get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+
+            // Comite as exclusões em batch
+            return batch.commit();
+        })
+        .then(() => {
+            console.log(`Animal e suas fichas excluídos com sucesso (ID: ${id}).`);
+        })
+        .catch(error => {
+            console.error("Erro ao excluir animal e fichas:", error);
+            throw error;
+        });
 }
 
 export {salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimais, buscarAnimalPorId, atualizarAnimal, deletarAnimal}
+
 
 
 
