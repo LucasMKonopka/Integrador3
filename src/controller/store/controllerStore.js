@@ -230,7 +230,12 @@ function salvarEdicao() {
     const animalId = selectAnimal.value;
 
     if (!animalId) {
-        alert("Por favor, selecione um animal para salvar as alterações.");
+        Swal.fire({
+            title: 'Erro!',
+            text: 'Por favor, selecione um animal para salvar as alterações.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
         return;
     }
 
@@ -247,12 +252,23 @@ function salvarEdicao() {
 
     atualizarAnimal(animalId, animalData)
         .then(() => {
-            alert("Alterações salvas com sucesso.");
-            window.location.href = 'inicial.html';
+            Swal.fire({
+                title: 'Sucesso!',
+                text: 'Alterações salvas com sucesso.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                window.location.href = 'inicial.html';
+            });
         })
         .catch((error) => {
             console.error("Erro ao salvar as alterações:", error);
-            alert("Erro ao salvar as alterações. Por favor, tente novamente mais tarde.");
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Erro ao salvar as alterações. Por favor, tente novamente mais tarde.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         });
 }
 
@@ -265,21 +281,48 @@ function apagarAnimal() {
     const animalId = selectAnimal.value;
 
     if (!animalId) {
-        alert("Por favor, selecione um animal para excluir.");
+        Swal.fire({
+            title: 'Erro!',
+            text: 'Por favor, selecione um animal para excluir.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
         return;
     }
 
-    if (confirm("Tem certeza de que deseja excluir este animal e todas as suas fichas?")) {
-        deletarAnimal(animalId)
-            .then(() => {
-                alert("Animal e suas fichas excluídos com sucesso.");
-                window.location.href = 'inicial.html';
-            })
-            .catch((error) => {
-                console.error("Erro ao excluir o animal e suas fichas:", error);
-                alert("Erro ao excluir o animal e suas fichas. Por favor, tente novamente mais tarde.");
-            });
-    }
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: "Você realmente deseja excluir este animal e todas as suas fichas?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            deletarAnimal(animalId)
+                .then(() => {
+                    Swal.fire({
+                        title: 'Excluído!',
+                        text: 'Animal e suas fichas excluídos com sucesso.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = 'inicial.html';
+                    });
+                })
+                .catch((error) => {
+                    console.error("Erro ao excluir o animal e suas fichas:", error);
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: 'Erro ao excluir o animal e suas fichas. Por favor, tente novamente mais tarde.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                });
+        }
+    });
 }
 
 function cancelarEdicao() {
@@ -438,29 +481,59 @@ async function salvarEdicaoFicha() {
             nomeVeterinario,
             procedimento
         });
-        alert("Ficha atualizada com sucesso!");
-        window.location.href = "buscarficha.html";
+        Swal.fire({
+            title: 'Sucesso!',
+            text: 'Ficha atualizada com sucesso!',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            window.location.href = "buscarficha.html";
+        });
     } catch (error) {
         console.error("Erro ao atualizar ficha:", error);
-        alert("Erro ao atualizar ficha. Tente novamente.");
+        Swal.fire({
+            title: 'Erro!',
+            text: 'Erro ao atualizar ficha. Tente novamente.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 
 async function apagarFicha() {
     const params = new URLSearchParams(window.location.search);
     const fichaId = params.get('id');
-    
-    const confirmacao = confirm("Tem certeza que deseja excluir esta ficha?");
-    if (confirmacao) {
-        try {
-            await deletarFicha(fichaId);
-            alert("Ficha excluída com sucesso!");
-            window.location.href = "buscarficha.html";
-        } catch (error) {
-            console.error("Erro ao excluir ficha:", error);
-            alert("Erro ao excluir ficha. Tente novamente.");
+
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: "Você deseja excluir esta ficha?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim, excluir!',
+        cancelButtonText: 'Não, cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                await deletarFicha(fichaId);
+                Swal.fire(
+                    'Excluída!',
+                    'Ficha excluída com sucesso.',
+                    'success'
+                ).then(() => {
+                    window.location.href = "buscarficha.html";
+                });
+            } catch (error) {
+                console.error("Erro ao excluir ficha:", error);
+                Swal.fire(
+                    'Erro!',
+                    'Erro ao excluir ficha. Tente novamente.',
+                    'error'
+                );
+            }
         }
-    }
+    });
 }
 
 window.preencherFormulario = preencherFormulario;
