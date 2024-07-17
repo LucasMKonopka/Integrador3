@@ -48,15 +48,16 @@ window.salvarAnimal = salvarAnimal;
 
 
 
+
 //criar ficha para o animal
 
 document.addEventListener('DOMContentLoaded', function() {
-
-    if (window.location.href.includes('novaficha.html') /*|| window.location.href.includes('editarAnimal.html')*/) {
+    if (window.location.href.includes('novaficha.html')) {
 
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 CarregarAnimais();
+                setDateToToday();
             } else {
                 console.log('Usuário não autenticado.');
             }
@@ -70,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const cancelarButton = document.getElementById('cancelar');
     if (cancelarButton) {
-        cancelarButton.addEventListener('click', cancelarFicha);
+        cancelarButton.addEventListener('click', cancelar);
     }
 });
 
@@ -88,6 +89,13 @@ function CarregarAnimais() {
         .catch((error) => {
             console.error("Erro ao carregar animais:", error);
         });
+}
+
+function setDateToToday() {
+    const dataAtendimento = document.getElementById('dataAtendimento');
+    const today = new Date().toISOString().split('T')[0];
+    dataAtendimento.value = today;
+    dataAtendimento.max = today;
 }
 
 function salvarFicha() {
@@ -122,11 +130,21 @@ function salvarFicha() {
         });
 }
 
-function cancelarFicha() {
-    const confirmacao = confirm("Tem certeza que deseja cancelar a criação da nova ficha?");
-    if (confirmacao) {
-        window.location.href = "inicial.html";
-    }
+function cancelar() {
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: "Você deseja cancelar?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim, cancelar!',
+        cancelButtonText: 'Não, continuar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "inicial.html";
+        }
+    });
 }
 
 
@@ -265,12 +283,20 @@ function apagarAnimal() {
 }
 
 function cancelarEdicao() {
-    var confirmacao = confirm("tem certeza que deseja cancelar alterações? Todos as informações não salvas serão perdidas!")
-    
-    if(confirmacao){
-        window.location.href = 'inicial.html';
-    }
-    
+    Swal.fire({
+        title: 'Tem certeza?',
+        text: "Você deseja cancelar?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim, cancelar!',
+        cancelButtonText: 'Não, continuar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "inicial.html";
+        }
+    });
 }
 
 function limparCampos() {
@@ -441,64 +467,3 @@ window.preencherFormulario = preencherFormulario;
 window.salvarEdicaoFicha = salvarEdicaoFicha;
 window.apagarFicha = apagarFicha;
 
-
-/*
-async function carregarAnimaisBuscar() {
-    const selectAnimal = document.getElementById('selectAnimalBuscar');
-    selectAnimal.innerHTML = ""; 
-
-    const optionEmBranco = document.createElement('option');
-    optionEmBranco.value = "";
-    optionEmBranco.textContent = "Selecione um animal";
-    selectAnimal.appendChild(optionEmBranco);
-
-    const animais = await carregarAnimaisDoUsuario();
-    animais.forEach(animal => {
-        const optionAnimal = document.createElement('option');
-        optionAnimal.value = animal.id;
-        optionAnimal.textContent = animal.nome;
-        selectAnimal.appendChild(optionAnimal);
-    });
-}
-window.carregarAnimaisBuscar = carregarAnimaisBuscar;
-
-async function buscarFichasDoAnimal() {
-    const animalId = document.getElementById('selectAnimalBuscar').value;
-
-    if (!animalId) {
-        console.error("Nenhum animal selecionado.");
-        return;
-    }
-
-    const fichasDeAtendimentoList = document.getElementById('fichasDeAtendimento').getElementsByTagName('tbody')[0];
-    fichasDeAtendimentoList.innerHTML = "";
-
-    const fichas = await buscarFichasPorAnimal(animalId);
-    if (fichas.length === 0) {
-        const noFichasMessage = document.createElement('tr');
-        const noFichasDataCell = document.createElement('td');
-        noFichasDataCell.colSpan = 5; 
-        noFichasDataCell.textContent = "Nenhuma ficha de atendimento encontrada para este animal.";
-        noFichasMessage.appendChild(noFichasDataCell);
-        fichasDeAtendimentoList.appendChild(noFichasMessage);
-    } else {
-        for (const ficha of fichas) {
-            const nomeAnimal = await obterNomeAnimal(ficha.animalId);
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td>${ficha.dataAtendimento}</td>
-                <td>${nomeAnimal}</td>
-                <td>${ficha.nomeVeterinario}</td>
-                <td>${ficha.procedimento}</td>
-                <td><button onclick="editarFicha('${ficha.id}')">Editar</button></td>
-            `;
-            fichasDeAtendimentoList.appendChild(newRow);
-        }
-    }
-}
-window.buscarFichasDoAnimal = buscarFichasDoAnimal;
-
-function editarFicha(id) {
-    window.location.href = `editarficha.html?id=${id}`;
-}
-window.editarFicha = editarFicha;*/
