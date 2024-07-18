@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // funções de login, logout, registro, redefinição de senha
     function login() {
         var email = document.getElementById('email').value;
         var password = document.getElementById('password').value;
@@ -25,7 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch((error) => {
                 console.error("Erro ao fazer login:", error);
-                alert('Erro ao fazer login! Email ou senha incorreto!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao fazer login! Email ou senha incorreto!'
+                });
             });
     }
     window.login = login;
@@ -37,7 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch((error) => {
                 console.error("Erro ao fazer logout:", error);
-                alert("Erro ao fazer logout: " + error.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao fazer logout: ' + error.message
+                });
             });
     }
     window.Sair = Sair;
@@ -81,14 +88,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById("password").value;
         const nome = document.getElementById("nome").value;
         const cpf = document.getElementById("cpf_cnpj").value;
-
+    
         if (!email || !password || !nome || !cpf) {
             console.error("Elementos de e-mail, senha, nome ou CPF não encontrados.");
             return;
         }
-
+    
         const additionalData = { nome, cpf };
-
+    
         registerModel(email, password, additionalData)
             .then(() => {
                 console.log("Usuário e dados adicionais cadastrados com sucesso!");
@@ -96,10 +103,27 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error("Erro ao criar usuário:", error);
-                alert("Erro ao criar usuário: " + error.message);
+                let errorMessage = "Erro ao criar usuário.";
+    
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'O endereço de e-mail já está em uso por outra conta.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'O endereço de e-mail é inválido.';
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    errorMessage = 'Operação não permitida. Entre em contato com o suporte.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'A senha é muito fraca. Por favor, escolha uma senha mais forte.';
+                }
+    
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: errorMessage
+                });
             });
     }
     window.register = register;
+    
 
     function RedefinirSenha() {
         var email = document.getElementById('email').value;
@@ -107,18 +131,25 @@ document.addEventListener('DOMContentLoaded', function() {
         RedefinirSenhaModel(email)
             .then(() => {
                 console.log('E-mail de redefinição de senha enviado.');
-                alert('E-mail de redefinição de senha enviado com sucesso! Verifique sua caixa de entrada.');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: 'E-mail de redefinição de senha enviado com sucesso! Verifique sua caixa de entrada.'
+                });
             })
             .catch((error) => {
                 console.error("Erro ao enviar e-mail de redefinição de senha:", error);
-                alert("Erro ao enviar e-mail de redefinição de senha: " + error.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao enviar e-mail de redefinição de senha: ' + error.message
+                });
             });
     }
     window.RedefinirSenha = RedefinirSenha;
 
     document.getElementById('register-form').addEventListener('submit', validateForm);
 
-    // carregar dados do usuário apenas na página de edição
     if (window.location.href.includes('editarUsuario.html')) {
         firebase.auth().onAuthStateChanged(function(user) {
             if (user) {
@@ -144,8 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Funções de edição
-    function salvarEdicaoUser() {
+    async function salvarEdicaoUser() {
         const novoNome = document.getElementById('novoNome').value;
         const cpf = document.getElementById('cpf').value;
         const novoEmail = document.getElementById('email').value;
@@ -153,14 +183,39 @@ document.addEventListener('DOMContentLoaded', function() {
         const confirmarNovaSenha = document.getElementById('confirmarNovaSenha').value;
 
         if (novaSenha && novaSenha !== confirmarNovaSenha) {
-            alert('As senhas não coincidem.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'As senhas não coincidem.'
+            });
             return;
         }
 
         const user = firebase.auth().currentUser;
         if (user) {
             const currentEmail = user.email;
-            const currentPassword = prompt('Para atualizar o e-mail e a senha, por favor insira sua senha atual:');
+
+            const { value: currentPassword } = await Swal.fire({
+                title: 'Autenticação Necessária',
+                input: 'password',
+                inputLabel: 'Para atualizar o e-mail e a senha, por favor insira sua senha atual:',
+                inputPlaceholder: 'Digite sua senha atual',
+                inputAttributes: {
+                    maxlength: 20,
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                showCancelButton: true
+            });
+
+            if (!currentPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Cancelado',
+                    text: 'Atualização de dados cancelada.'
+                });
+                return;
+            }
 
             const credentials = firebase.auth.EmailAuthProvider.credential(currentEmail, currentPassword);
             user.reauthenticateWithCredential(credentials)
@@ -168,12 +223,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     return salvarEdicaoUserModel(novoNome, cpf, novoEmail, novaSenha, user.uid);
                 })
                 .then(() => {
-                    alert('Dados atualizados com sucesso.');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso',
+                        text: 'Dados atualizados com sucesso.'
+                    });
                     window.location.href = "../views/inicial.html";
                 })
                 .catch((error) => {
                     console.error("Erro ao atualizar dados do usuário:", error);
-                    alert("Erro ao atualizar dados do usuário: " + error.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro',
+                        text: 'Erro ao atualizar dados do usuário: ' + error.message
+                    });
                 });
         }
     }
@@ -185,32 +248,69 @@ document.addEventListener('DOMContentLoaded', function() {
     window.cancelarEdicaoUser = cancelarEdicaoUser;
 
     function apagarUser() {
-        const confirmation = confirm('Tem certeza de que deseja excluir o usuário? Esta ação é irreversível.');
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Tem certeza de que deseja excluir o usuário? Esta ação é irreversível.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    const currentEmail = user.email;
+                    Swal.fire({
+                        title: 'Autenticação Necessária',
+                        input: 'password',
+                        inputLabel: 'Para excluir o usuário, por favor insira sua senha atual:',
+                        inputPlaceholder: 'Digite sua senha atual',
+                        inputAttributes: {
+                            maxlength: 20,
+                            autocapitalize: 'off',
+                            autocorrect: 'off'
+                        },
+                        showCancelButton: true
+                    }).then(({ value: currentPassword }) => {
+                        if (!currentPassword) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Cancelado',
+                                text: 'Exclusão de usuário cancelada.'
+                            });
+                            return;
+                        }
 
-        if (confirmation) {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                const currentEmail = user.email;
-                const currentPassword = prompt('Para excluir o usuário, por favor insira sua senha atual:');
-
-                const credentials = firebase.auth.EmailAuthProvider.credential(currentEmail, currentPassword);
-                user.reauthenticateWithCredential(credentials)
-                    .then(() => {
-                        return apagarUserModel(user.uid);
-                    })
-                    .then(() => {
-                        return user.delete();
-                    })
-                    .then(() => {
-                        alert('Usuário excluído com sucesso.');
-                        window.location.href = "../views/login.html";
-                    })
-                    .catch((error) => {
-                        console.error("Erro ao excluir usuário:", error);
-                        alert("Erro ao excluir usuário: " + error.message);
+                        const credentials = firebase.auth.EmailAuthProvider.credential(currentEmail, currentPassword);
+                        user.reauthenticateWithCredential(credentials)
+                            .then(() => {
+                                return apagarUserModel(user.uid);
+                            })
+                            .then(() => {
+                                return user.delete();
+                            })
+                            .then(() => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Excluído!',
+                                    text: 'Usuário excluído com sucesso.'
+                                });
+                                window.location.href = "../views/login.html";
+                            })
+                            .catch((error) => {
+                                console.error("Erro ao excluir usuário:", error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Erro',
+                                    text: 'Erro ao excluir usuário: ' + error.message
+                                });
+                            });
                     });
+                }
             }
-        }
+        });
     }
     window.apagarUser = apagarUser;
 });
