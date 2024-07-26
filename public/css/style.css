@@ -150,11 +150,37 @@ button#salvar {
     margin-bottom: 10px;
 }
 
-button#novaFicha{
+
+
+#containerprincipal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espaçamento entre os botões */
+    justify-content: center;
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px; /* Ajuste conforme necessário */
+}
+
+#novaFicha,
+#cadastrarAnimal,
+#editarAnimal,
+#buscarFicha {
     font-size: 20px;
     font-family: "Roboto";
-    width: 351px;
-    height: 47px;
+    width: 100%; /* Garantir que os botões usem a largura do wrapper */
+    height: 100px;
     flex-shrink: 0;
     border-radius: 5px;
     border: 1px solid #010101;
@@ -162,49 +188,30 @@ button#novaFicha{
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     font-weight: bold;
     margin-top: 10px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+#novaFicha:hover,
+#cadastrarAnimal:hover,
+#editarAnimal:hover,
+#buscarFicha:hover {
+    transform: scale(1.1);
+}
+
+#legend-novaFicha,
+#legend-cadastrarAnimal,
+#legend-editarAnimal,
+#legend-buscarFicha {
+    font-size: 14px;
+    font-family: "Roboto";
+    text-align: center;
+    margin-top: 5px;
+    color: #666;
 }
 
 
-button#cadastrarAnimal{
-    font-size: 20px;
-    font-family: "Roboto";
-    width: 351px;
-    height: 47px;
-    flex-shrink: 0;
-    border-radius: 5px;
-    border: 1px solid #010101;
-    background: #FBFBFB;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    font-weight: bold;
-    margin-top: 10px;
-}
-button#editarAnimal{
-    font-size: 20px;
-    font-family: "Roboto";
-    width: 351px;
-    height: 47px;
-    flex-shrink: 0;
-    border-radius: 5px;
-    border: 1px solid #010101;
-    background: #FBFBFB;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    font-weight: bold;
-    margin-top: 10px;
-}
 
-button#buscarFicha{
-    font-size: 20px;
-    font-family: "Roboto";
-    width: 351px;
-    height: 47px;
-    flex-shrink: 0;
-    border-radius: 5px;
-    border: 1px solid #010101;
-    background: #FBFBFB;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    font-weight: bold;
-    margin-top: 10px;
-}
 
 #buscarficha {
     font-size: 24px;

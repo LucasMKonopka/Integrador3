@@ -32,22 +32,29 @@
     </header>
 
     <main>
-        <div id="container-principal">
-                <br><br>
-                <div>
-                    <button type="button" id="novaFicha" onclick="novaficha()">Nova Ficha</button>
-                </div>
-                <div>
+        <div id="containerprincipal">
+            <div class="button-container">
+                <div class="button-wrapper">
                     <button type="button" id="cadastrarAnimal" onclick="cadastraranimal()">Cadastrar Animal</button>
+                    <span class="button-legend" id="legend-cadastrarAnimal">Registrar um novo animal</span>
                 </div>
-                <div>
-                    <button type="button" id="editarAnimal" onclick="editaranimal()">Editar Animal</button>
-                </div>
-                <div>
-                    <button type="button" id="buscarFicha" onclick="buscarficha()">Buscar ficha</button>  
-                </div>
-                
 
+                <div class="button-wrapper">
+                    <button type="button" id="editarAnimal" onclick="editaranimal()">Editar Animal</button>
+                    <span class="button-legend" id="legend-editarAnimal">Alterar informações de um animal</span>
+                </div>
+
+                <div class="button-wrapper">
+                    <button type="button" id="novaFicha" onclick="novaficha()">Nova Ficha</button>
+                    <span class="button-legend" id="legend-novaFicha">Cadastrar uma nova ficha de atendimento</span>
+                </div>
+
+                
+                <div class="button-wrapper">
+                    <button type="button" id="buscarFicha" onclick="buscarficha()">Buscar Ficha</button>  
+                    <span class="button-legend" id="legend-buscarFicha">Consultar uma ficha de atendimento</span>
+                </div>
+            </div>
         </div>
     </main>
 
