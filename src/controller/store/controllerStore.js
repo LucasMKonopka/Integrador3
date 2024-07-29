@@ -5,46 +5,63 @@ import { salvarAnimalModel, salvarFichaModel, carregarAnimalsModel, buscarAnimai
 
 
 
-function salvarAnimal() {
-    const nome = document.getElementById('nome').value.trim();
-    const datanasc = document.getElementById('datanasc').value.trim();
-    const especie = document.getElementById('especie').value.trim();
-    const idade = document.getElementById('idade').value.trim();
-    const sexo = document.getElementById('sexo').value.trim();
-    const raca = document.getElementById('raça').value.trim();
-    const porte = document.getElementById('porte').value.trim();
-    const observacoes = document.getElementById('observacoes').value.trim();
+    document.addEventListener('DOMContentLoaded', function() {
+        const datanascInput = document.getElementById('datanasc');
+        const today = new Date().toISOString().split('T')[0];
+        datanascInput.setAttribute('max', today);
+    });
     
-    if (!nome || !datanasc || !especie || !idade || !sexo || !raca || !porte) {
-        alert("Por favor, preencha todos os campos.");
-        return;
+    function salvarAnimal() {
+        const nome = document.getElementById('nome').value.trim();
+        const datanasc = document.getElementById('datanasc').value.trim();
+        const especie = document.getElementById('especie').value.trim();
+        const idade = document.getElementById('idade').value.trim();
+        const sexo = document.getElementById('sexo').value.trim();
+        const raca = document.getElementById('raça').value.trim();
+        const porte = document.getElementById('porte').value.trim();
+        const observacoes = document.getElementById('observacoes').value.trim();
+    
+        if (!nome || !datanasc || !especie || !idade || !sexo || !raca || !porte) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Por favor, preencha todos os campos.'
+            });
+            return;
+        }
+    
+        const animalData = {
+            nome,
+            datanasc,
+            especie,
+            idade,
+            sexo,
+            raca,
+            porte,
+            observacoes
+        };
+    
+        salvarAnimalModel(animalData)
+            .then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sucesso',
+                    text: 'Animal cadastrado com sucesso!'
+                }).then(() => {
+                    document.getElementById('formCadastroAnimal').reset();
+                    window.location.href = "inicial.html";
+                });
+            })
+            .catch((error) => {
+                console.error("Erro ao cadastrar animal: ", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: 'Erro ao cadastrar animal. Por favor, tente novamente.'
+                });
+            });
     }
-    
-    const animalData = {
-        nome,
-        datanasc,
-        especie,
-        idade,
-        sexo,
-        raca,
-        porte,
-        observacoes
-    };
-    
-    salvarAnimalModel(animalData)
-        .then(() => {
-            document.getElementById('mensagemCadastro').textContent = "Animal cadastrado com sucesso!";
-            formCadastroAnimal.reset();
-            setTimeout(() => {
-                window.location.href = "inicial.html";
-            }, 1000);
-        })
-        .catch((error) => {
-            console.error("Erro ao cadastrar animal: ", error);
-            document.getElementById('mensagemCadastro').textContent = "Erro ao cadastrar animal. Por favor, tente novamente.";
-        });
-}
-window.salvarAnimal = salvarAnimal;
+    window.salvarAnimal = salvarAnimal;
 
 
 
@@ -105,7 +122,11 @@ function salvarFicha() {
     const procedimento = document.getElementById('atendimento').value;
 
     if (!animalId || !nomeVeterinario || !dataAtendimento || !procedimento) {
-        alert("Por favor, preencha todos os campos.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'Por favor, preencha todos os campos.'
+        });
         return;
     }
 
@@ -119,14 +140,22 @@ function salvarFicha() {
 
     salvarFichaModel(fichaAtendimentoData)
         .then(() => {
-            document.getElementById('formNovaFicha').reset();
-            document.getElementById('mensagemCadastro').textContent = "Ficha de atendimento cadastrada com sucesso!";
-            setTimeout(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso',
+                text: 'Ficha de atendimento cadastrada com sucesso!'
+            }).then(() => {
+                document.getElementById('formNovaFicha').reset();
                 window.location.href = "inicial.html";
-            }, 1000);
+            });
         })
         .catch((error) => {
             console.error("Erro ao salvar ficha de atendimento:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: 'Erro ao salvar ficha de atendimento. Por favor, tente novamente.'
+            });
         });
 }
 
@@ -146,8 +175,6 @@ function cancelar() {
         }
     });
 }
-
-
 
 //Editar animal
 
@@ -392,6 +419,11 @@ async function carregarAnimaisBuscar() {
     }
 }
 
+function formatarData(data) {
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}/${mes}/${ano}`;
+}
+
 async function buscarFichasDoAnimal() {
     const animalId = document.getElementById('selectAnimalBuscar').value;
 
@@ -415,9 +447,10 @@ async function buscarFichasDoAnimal() {
         } else {
             for (const ficha of fichas) {
                 const nomeAnimal = await obterNomeAnimal(ficha.animalId);
+                const dataAtendimentoFormatada = formatarData(ficha.dataAtendimento);
                 const newRow = document.createElement('tr');
                 newRow.innerHTML = `
-                    <td>${ficha.dataAtendimento}</td>
+                    <td>${dataAtendimentoFormatada}</td>
                     <td>${nomeAnimal}</td>
                     <td>${ficha.nomeVeterinario}</td>
                     <td>${ficha.procedimento}</td>
@@ -446,6 +479,11 @@ window.editarFicha = editarFicha;
 document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const fichaId = params.get('id');
+
+    // Define a data máxima para hoje
+    const dataAtendimentoInput = document.getElementById('dataAtendimento');
+    const today = new Date().toISOString().split('T')[0];
+    dataAtendimentoInput.setAttribute('max', today);
 
     if (fichaId) {
         await preencherFormulario(fichaId);
@@ -539,4 +577,3 @@ async function apagarFicha() {
 window.preencherFormulario = preencherFormulario;
 window.salvarEdicaoFicha = salvarEdicaoFicha;
 window.apagarFicha = apagarFicha;
-
